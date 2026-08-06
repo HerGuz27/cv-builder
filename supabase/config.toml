@@ -1,0 +1,32 @@
+# Supabase configuration
+
+[project]
+project_id = "your-project-id"
+region = "us-east-1"
+
+[api]
+enabled = true
+# API Extractor settings
+max_rows = 1000
+
+[auth]
+enabled = true
+site_url = "http://localhost:3000"
+additional_redirect_urls = [
+  "https://yourdomain.com"
+]
+jwt_expiry = 3600
+refresh_token_rotation_enabled = true
+enable_signup = true
+
+[database]
+# Connection pooling
+pooling_mode = "transaction"
+max_pool_size = 10
+
+[realtime]
+enabled = true
+max_bytes_per_second = 1000000
+
+[storage]
+enabled = true
