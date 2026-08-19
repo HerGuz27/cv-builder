@@ -8,7 +8,7 @@ interface HarvardPDFProps {
 
 const styles = StyleSheet.create({
   page: {
-    padding: [35, 40],
+    padding: [45, 55],
     fontSize: 11,
     fontFamily: "Helvetica",
   },
