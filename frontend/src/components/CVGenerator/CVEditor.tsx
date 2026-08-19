@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { CVData } from "../../types/cv";
-import { HarvardTemplate } from "../CVTemplates/HarvardTemplate";
+import { PDFPreview } from "./PDFPreview";
 import { PersonalInfoEditor } from "./editors/PersonalInfoEditor";
 import { ResumenEditor } from "./editors/ResumenEditor";
 import { ExperienceEditor } from "./editors/ExperienceEditor";
@@ -11,11 +11,15 @@ import { CertificationsEditor } from "./editors/CertificationsEditor";
 interface CVEditorProps {
   data: CVData;
   onChange: (data: CVData) => void;
+  /** PDF generado a partir de `data`; es el mismo archivo que se descarga. */
+  pdfBlob: Blob | null;
+  isBuilding?: boolean;
+  pdfError?: string | null;
 }
 
 type Section = "personal" | "resumen" | "experiencia" | "educacion" | "skills" | "certificaciones";
 
-export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange }) => {
+export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isBuilding, pdfError }) => {
   const [activeSection, setActiveSection] = useState<Section>("personal");
 
   const sections: { id: Section; label: string; icon: string }[] = [
@@ -93,17 +97,13 @@ export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange }) => {
       </div>
 
       {/* Preview Panel */}
-      <div className="sticky top-20 h-fit">
-        <div className="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-gray-200">
-          <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 text-sm font-semibold text-gray-700">
-            Preview del CV
-          </div>
-          <div className="overflow-y-auto max-h-[calc(100vh-150px)]">
-            <div style={{ backgroundColor: "white" }}>
-              <HarvardTemplate data={data} />
-            </div>
-          </div>
-        </div>
+      <div className="sticky top-20 h-[calc(100vh-120px)]">
+        <PDFPreview
+          blob={pdfBlob}
+          isBuilding={isBuilding}
+          error={pdfError}
+          className="h-full rounded-lg shadow-lg overflow-hidden border-2 border-gray-200"
+        />
       </div>
     </div>
   );

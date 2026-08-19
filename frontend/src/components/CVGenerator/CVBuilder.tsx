@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { PDFDownloadLink } from "@react-pdf/renderer";
 import { CVData, CVTemplate } from "../../types/cv";
-import { HarvardTemplate } from "../CVTemplates/HarvardTemplate";
-import { HarvardPDF } from "../CVTemplates/HarvardPDF";
+import { useCVPdf } from "../../hooks/useCVPdf";
 import { CVEditor } from "./CVEditor";
+import { PDFPreview } from "./PDFPreview";
 
 interface CVBuilderProps {
   data: CVData;
@@ -15,6 +14,9 @@ export const CVBuilder: React.FC<CVBuilderProps> = ({ data: initialData }) => {
   const [cvData, setCvData] = useState<CVData>(initialData);
   const [selectedTemplate, setSelectedTemplate] = useState<CVTemplate>("harvard");
   const [showEditor, setShowEditor] = useState(true);
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const { blob, isBuilding, error, buildNow } = useCVPdf(cvData);
 
   const templates: { value: CVTemplate; label: string; available: boolean }[] = [
     { value: "harvard", label: "Harvard", available: true },
@@ -23,6 +25,28 @@ export const CVBuilder: React.FC<CVBuilderProps> = ({ data: initialData }) => {
   ];
 
   const fileName = `cv-${cvData.personal.nombre.toLowerCase().replace(/\s+/g, "-")}.pdf`;
+
+  const handleDownloadPDF = async () => {
+    setIsGenerating(true);
+    try {
+      // Regenera con los datos actuales para no bajar una versión atrasada
+      // por el debounce del preview. Mismo documento, mismos bytes.
+      const pdfBlob = await buildNow();
+
+      const url = URL.createObjectURL(pdfBlob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Error generating PDF:", err);
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -57,30 +81,28 @@ export const CVBuilder: React.FC<CVBuilderProps> = ({ data: initialData }) => {
             </select>
 
             {selectedTemplate === "harvard" ? (
-              <PDFDownloadLink
-                document={<HarvardPDF data={cvData} />}
-                fileName={fileName}
-                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 no-underline text-sm"
+              <button
+                onClick={handleDownloadPDF}
+                disabled={isGenerating}
+                className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {({ loading }) =>
-                  loading ? (
-                    <>
-                      <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      Generando...
-                    </>
-                  ) : (
-                    <>
-                      <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                      </svg>
-                      Descargar PDF
-                    </>
-                  )
-                }
-              </PDFDownloadLink>
+                {isGenerating ? (
+                  <>
+                    <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                    </svg>
+                    Generando...
+                  </>
+                ) : (
+                  <>
+                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                    </svg>
+                    Descargar PDF
+                  </>
+                )}
+              </button>
             ) : (
               <button disabled className="px-6 py-2 bg-gray-400 text-white font-semibold rounded-lg cursor-not-allowed text-sm">
                 Próximamente
@@ -104,14 +126,16 @@ export const CVBuilder: React.FC<CVBuilderProps> = ({ data: initialData }) => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto">
         {showEditor ? (
-          <CVEditor data={cvData} onChange={setCvData} />
+          <CVEditor data={cvData} onChange={setCvData} pdfBlob={blob} isBuilding={isBuilding} pdfError={error} />
         ) : (
-          <div className="py-8">
-            {/* CV Preview */}
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="p-0" style={{ backgroundColor: "white" }}>
-                {selectedTemplate === "harvard" && <HarvardTemplate data={cvData} />}
-              </div>
+          <div className="py-6 px-4">
+            <div className="max-w-3xl mx-auto">
+              <PDFPreview
+                blob={blob}
+                isBuilding={isBuilding}
+                error={error}
+                className="h-[calc(100vh-140px)] rounded-lg shadow-lg overflow-hidden border-2 border-gray-200"
+              />
             </div>
           </div>
         )}
