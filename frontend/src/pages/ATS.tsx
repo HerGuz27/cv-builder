@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ATSForm from "../components/ATSForm";
 import MatchHistory from "../components/MatchHistory";
 
 export default function ATSPage() {
   const [activeTab, setActiveTab] = useState<"analyzer" | "history">("analyzer");
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -36,6 +38,12 @@ export default function ATSPage() {
             }`}
           >
             📋 Historial
+          </button>
+          <button
+            onClick={() => navigate("/cv-builder")}
+            className="px-6 py-2 rounded-lg font-medium transition bg-green-500 text-white hover:bg-green-600"
+          >
+            ✍️ Mi CV
           </button>
         </div>
 
