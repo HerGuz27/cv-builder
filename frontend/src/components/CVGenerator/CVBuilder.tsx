@@ -109,7 +109,7 @@ export const CVBuilder: React.FC<CVBuilderProps> = ({ data: initialData }) => {
     <div className="min-h-screen bg-ground">
       {/* Header */}
       <div className="bg-ground border-b-2 border-divider sticky top-0 z-50">
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+        <div className="max-w-[1760px] mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center gap-x-4 gap-y-2">
           {/* Marca + título */}
           <div className="flex items-baseline gap-3 min-w-0 mr-auto">
             <span className="text-lg font-extrabold font-sans tracking-tight">Nexocv</span>
@@ -228,7 +228,7 @@ export const CVBuilder: React.FC<CVBuilderProps> = ({ data: initialData }) => {
       </div>
 
       {/* Main Content */}
-      <div className="max-w-[1440px] mx-auto">
+      <div className="max-w-[1760px] mx-auto">
         {showEditor ? (
           <CVEditor data={cvData} onChange={setCvData} pdfBlob={blob} isBuilding={isBuilding} pdfError={error} />
         ) : (

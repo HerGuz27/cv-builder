@@ -54,7 +54,7 @@ export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isB
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-[232px_minmax(0,1fr)_428px] border-b-2 border-divider">
+    <div className="grid grid-cols-1 lg:grid-cols-[184px_minmax(0,1fr)_minmax(440px,48%)] xl:grid-cols-[208px_minmax(0,1fr)_minmax(600px,52%)] border-b-2 border-divider">
       {/* Section rail (desktop) / tabs (mobile) */}
       <nav
         aria-label="Secciones del CV"
