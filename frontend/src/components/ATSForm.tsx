@@ -2,9 +2,10 @@ import { useState } from "react";
 import { extractTextFromPDF } from "../services/pdf";
 import { analyzeJobMatch } from "../services/claude";
 import type { MatchResult } from "../services/types";
-import { saveMatch } from "../services/storage";
 import { hasQuota, consume, getRemaining, FREE_MONTHLY_LIMIT } from "../services/quota";
 import MatchResultDisplay from "./MatchResult";
+import SaveApplicationForm from "./SaveApplicationForm";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 
 export default function ATSForm() {
   const [cvFile, setCvFile] = useState<File | null>(null);
@@ -27,7 +28,7 @@ export default function ATSForm() {
 
   const handleAnalyze = async () => {
     if (!cvFile || !jobDescription.trim()) {
-      setError("Completá todos los campos");
+      setError("Completá el CV y la descripción del puesto");
       return;
     }
 
@@ -56,14 +57,23 @@ export default function ATSForm() {
       consume();
       setRemaining(getRemaining());
       setResult(matchResult);
-
-      const jobTitle = jobDescription.split("\n")[0].trim().substring(0, 100);
-      saveMatch(jobTitle, jobDescription, cvFile.name, matchResult);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al analizar el CV");
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleSaved = () => {
+    // Reset form after saving
+    setJobDescription("");
+    setCvFile(null);
+    setResult(null);
+    alert("¡Postulación guardada con éxito!");
+  };
+
+  const handleCancelSave = () => {
+    setResult(null);
   };
 
   return (
@@ -93,7 +103,10 @@ export default function ATSForm() {
                 className="cursor-pointer text-blue-500 hover:underline"
               >
                 {cvFile ? (
-                  <span className="text-green-600 font-medium">✓ {cvFile.name}</span>
+                  <span className="text-green-600 font-medium inline-flex items-center gap-1.5">
+                    <CheckCircleOutlinedIcon sx={{ fontSize: 18 }} />
+                    {cvFile.name}
+                  </span>
                 ) : (
                   <span>Click para subir tu CV</span>
                 )}
@@ -109,7 +122,7 @@ export default function ATSForm() {
             <textarea
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
-              placeholder="Pegá acá el aviso completo: título, requisitos, responsabilidades..."
+              placeholder="Pegá acá el aviso completo: requisitos, responsabilidades..."
               className="w-full h-64 px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
@@ -133,7 +146,21 @@ export default function ATSForm() {
       </div>
 
       {/* Result */}
-      {result && <MatchResultDisplay result={result} />}
+      {result && (
+        <>
+          <MatchResultDisplay result={result} />
+          <SaveApplicationForm
+            titulo=""
+            url=""
+            porcentajeMatch={result.porcentajeMatch}
+            matchResult={result}
+            jobDescription={jobDescription}
+            cvFileName={cvFile?.name || ""}
+            onSaved={handleSaved}
+            onCancel={handleCancelSave}
+          />
+        </>
+      )}
     </div>
   );
 }

@@ -4,6 +4,9 @@ import workerSrc from "pdfjs-dist/build/pdf.worker.min?url";
 // Set up the worker
 pdfjsLib.GlobalWorkerOptions.workerSrc = workerSrc;
 
+// Re-exportado para que el preview del CV use la misma instancia ya configurada.
+export { pdfjsLib };
+
 export async function extractTextFromPDF(file: File): Promise<string> {
   const arrayBuffer = await file.arrayBuffer();
   const pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
