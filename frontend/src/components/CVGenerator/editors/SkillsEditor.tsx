@@ -58,18 +58,18 @@ export const SkillsEditor: React.FC<SkillsEditorProps> = ({ skills, onChange }) 
   return (
     <div className="space-y-3">
       {Object.entries(skills).map(([category, skillList]) => (
-        <div key={category} className="border border-gray-300 rounded-lg overflow-hidden">
+        <div key={category} className={`acc ${expandedCategory === category ? "acc-open" : ""}`}>
           <button
             onClick={() =>
               setExpandedCategory(expandedCategory === category ? null : category)
             }
-            className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 flex items-center justify-between text-left"
+            className="acc-head"
           >
-            <p className="font-medium text-gray-900">{category}</p>
+            <p className="acc-title">{category}</p>
             <div className="flex items-center gap-2">
-              <span className="text-sm text-gray-600">{skillList.length} skills</span>
+              <span className="text-muted text-xs">{skillList.length} skills</span>
               <svg
-                className={`h-5 w-5 text-gray-500 transition-transform ${
+                className={`h-5 w-5 text-muted transition-transform ${
                   expandedCategory === category ? "rotate-180" : ""
                 }`}
                 fill="none"
@@ -87,25 +87,25 @@ export const SkillsEditor: React.FC<SkillsEditorProps> = ({ skills, onChange }) 
           </button>
 
           {expandedCategory === category && (
-            <div className="p-4 bg-white border-t border-gray-300 space-y-3">
+            <div className="acc-body space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+                <label className="field-label">
                   Nombre de la Categoría
                 </label>
                 <input
                   type="text"
                   value={category}
                   onChange={(e) => handleUpdateCategory(category, e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input"
                 />
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-gray-700">Skills</label>
+                  <label className="field-label !mb-0">Skills</label>
                   <button
                     onClick={() => handleAddSkill(category)}
-                    className="text-sm px-2 py-1 text-blue-600 hover:bg-blue-50 rounded"
+                    className="btn btn-ghost !min-h-0 !py-1 text-sm"
                   >
                     + Agregar
                   </button>
@@ -117,12 +117,12 @@ export const SkillsEditor: React.FC<SkillsEditorProps> = ({ skills, onChange }) 
                         type="text"
                         value={skill}
                         onChange={(e) => handleUpdateSkill(category, index, e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        className="input flex-1"
                         placeholder="Ingresa un skill..."
                       />
                       <button
                         onClick={() => handleRemoveSkill(category, index)}
-                        className="px-3 py-2 text-red-600 hover:bg-red-50 rounded font-medium text-sm"
+                        className="btn btn-ghost btn-icon shrink-0"
                       >
                         <CloseIcon sx={{ fontSize: 18 }} />
                       </button>
@@ -133,7 +133,7 @@ export const SkillsEditor: React.FC<SkillsEditorProps> = ({ skills, onChange }) 
 
               <button
                 onClick={() => handleRemoveCategory(category)}
-                className="w-full px-4 py-2 mt-3 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-medium text-sm"
+                className="btn btn-ghost btn-block mt-3"
               >
                 Eliminar Categoría
               </button>
@@ -144,7 +144,7 @@ export const SkillsEditor: React.FC<SkillsEditorProps> = ({ skills, onChange }) 
 
       <button
         onClick={handleAddCategory}
-        className="w-full px-4 py-3 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-medium text-sm border-2 border-dashed border-blue-300"
+        className="btn btn-secondary btn-dashed btn-block"
       >
         + Agregar Categoría
       </button>

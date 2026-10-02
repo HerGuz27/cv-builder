@@ -36,17 +36,17 @@ export const CertificationsEditor: React.FC<CertificationsEditorProps> = ({
   return (
     <div className="space-y-3">
       {certificaciones.map((cert, index) => (
-        <div key={index} className="border border-gray-300 rounded-lg overflow-hidden">
+        <div key={index} className={`acc ${expandedIndex === index ? "acc-open" : ""}`}>
           <button
             onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
-            className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 flex items-center justify-between text-left"
+            className="acc-head"
           >
             <div className="flex-1">
-              <p className="font-medium text-gray-900">{cert.nombre}</p>
-              <p className="text-sm text-gray-600">{cert.emisor}</p>
+              <p className="acc-title">{cert.nombre}</p>
+              <p className="text-muted text-xs">{cert.emisor}</p>
             </div>
             <svg
-              className={`h-5 w-5 text-gray-500 transition-transform ${
+              className={`h-5 w-5 text-muted transition-transform ${
                 expandedIndex === index ? "rotate-180" : ""
               }`}
               fill="none"
@@ -58,53 +58,53 @@ export const CertificationsEditor: React.FC<CertificationsEditorProps> = ({
           </button>
 
           {expandedIndex === index && (
-            <div className="p-4 bg-white border-t border-gray-300 space-y-3">
+            <div className="acc-body space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
+                <label className="field-label">Nombre</label>
                 <input
                   type="text"
                   value={cert.nombre}
                   onChange={(e) => handleUpdate(index, "nombre", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input"
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Emisor</label>
+                <label className="field-label">Emisor</label>
                 <input
                   type="text"
                   value={cert.emisor}
                   onChange={(e) => handleUpdate(index, "emisor", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Fecha (YYYY o YYYY-MM)</label>
+                  <label className="field-label">Fecha (YYYY o YYYY-MM)</label>
                   <input
                     type="text"
                     value={cert.fecha}
                     onChange={(e) => handleUpdate(index, "fecha", e.target.value)}
                     placeholder="2023 o 2023-06"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">URL (opcional)</label>
+                  <label className="field-label">URL (opcional)</label>
                   <input
                     type="text"
                     value={cert.url || ""}
                     onChange={(e) => handleUpdate(index, "url", e.target.value)}
                     placeholder="https://..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input"
                   />
                 </div>
               </div>
 
               <button
                 onClick={() => handleRemoveCertification(index)}
-                className="w-full px-4 py-2 mt-3 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-medium text-sm"
+                className="btn btn-ghost btn-block mt-3"
               >
                 Eliminar Certificación
               </button>
@@ -115,7 +115,7 @@ export const CertificationsEditor: React.FC<CertificationsEditorProps> = ({
 
       <button
         onClick={handleAddCertification}
-        className="w-full px-4 py-3 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-medium text-sm border-2 border-dashed border-blue-300"
+        className="btn btn-secondary btn-dashed btn-block"
       >
         + Agregar Certificación
       </button>

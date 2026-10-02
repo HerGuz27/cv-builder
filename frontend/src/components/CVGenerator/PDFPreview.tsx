@@ -102,26 +102,28 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({ blob, isBuilding, error,
   }, [blob, width]);
 
   return (
-    <div className={`flex flex-col bg-gray-200 ${className ?? ""}`}>
-      <div className="flex items-center justify-between bg-gray-50 px-4 py-2 border-b border-gray-200 text-sm">
-        <span className="font-semibold text-gray-700">Vista previa (PDF real)</span>
-        <span className="flex items-center gap-3 text-xs text-gray-500">
+    <div className={`flex flex-col bg-surface ${className ?? ""}`}>
+      <div className="flex items-center justify-between gap-3 px-4 py-3 border-b-2 border-divider">
+        <span className="lbl">Vista previa (PDF real)</span>
+        <span className="flex items-center gap-3 text-xs text-muted">
           {numPages > 0 && <span>{numPages === 1 ? "1 página" : `${numPages} páginas`}</span>}
           {isBuilding && (
-            <span className="flex items-center gap-1.5 text-blue-600">
-              <span className="h-1.5 w-1.5 rounded-full bg-blue-600 animate-pulse" />
+            <span className="flex items-center gap-1.5 text-accent-700">
+              <span className="h-1.5 w-1.5 bg-accent animate-pulse" />
               Actualizando
             </span>
           )}
         </span>
       </div>
 
-      {error && <div className="bg-red-50 text-red-700 text-sm px-4 py-2 border-b border-red-200">{error}</div>}
+      {error && (
+        <div className="bg-accent-100 text-accent-800 text-sm px-4 py-2 border-b-2 border-accent">{error}</div>
+      )}
 
       <div ref={scrollRef} className="flex-1 overflow-y-scroll p-4">
         <div ref={pagesRef} />
         {!hasRendered && (
-          <div className="flex items-center justify-center py-20 text-sm text-gray-500">Generando PDF…</div>
+          <div className="flex items-center justify-center py-20 text-sm text-muted">Generando PDF…</div>
         )}
       </div>
     </div>

@@ -54,33 +54,49 @@ export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isB
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-6 px-4">
-      {/* Editor Panel */}
-      <div className="space-y-4">
-        {/* Section Tabs */}
-        <div className="bg-white rounded-lg shadow-md p-4 sticky top-20 z-40">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {sections.map((section) => (
+    <div className="grid grid-cols-1 lg:grid-cols-[232px_minmax(0,1fr)_428px] border-b-2 border-divider">
+      {/* Section rail (desktop) / tabs (mobile) */}
+      <nav
+        aria-label="Secciones del CV"
+        className="border-b-2 lg:border-b-0 lg:border-r-2 border-divider"
+      >
+        <div className="lg:sticky lg:top-[72px] lg:py-6">
+        <div className="hidden lg:block px-5 pb-4">
+          <div className="lbl">Secciones</div>
+        </div>
+        <div className="flex lg:flex-col overflow-x-auto lg:overflow-visible px-4 lg:px-0 lg:border-t-2 border-divider">
+          {sections.map((section) => {
+            const active = activeSection === section.id;
+            return (
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
-                className={`px-3 py-2 rounded-lg font-medium text-sm transition-colors ${
-                  activeSection === section.id
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                aria-current={active}
+                className={`rail-item shrink-0 px-3 pt-3 pb-2.5 lg:px-5 lg:py-3 border-b-[3px] lg:border-b lg:border-l-[3px] ${
+                  active
+                    ? "border-b-accent lg:border-b-divider lg:border-l-accent"
+                    : "border-b-transparent lg:border-b-divider lg:border-l-transparent"
                 }`}
               >
-                <span className="hidden sm:inline-flex items-center align-middle mr-1.5">
+                <span className="hidden lg:inline-flex items-center">
                   <section.icon sx={{ fontSize: 18 }} />
                 </span>
                 {section.label}
               </button>
-            ))}
-          </div>
+            );
+          })}
+        </div>
+        </div>
+      </nav>
+
+      {/* Editor Panel */}
+      <div className="px-4 py-6 lg:px-8 lg:py-7 min-w-0">
+        <div className="lbl mb-4">
+          Sección {sections.findIndex((s) => s.id === activeSection) + 1} de {sections.length}
         </div>
 
         {/* Section Content */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div>
           {activeSection === "plantilla" && (
             <TemplatePicker
               value={templateActual}
@@ -130,13 +146,10 @@ export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isB
       </div>
 
       {/* Preview Panel */}
-      <div className="sticky top-20 h-[calc(100vh-120px)]">
-        <PDFPreview
-          blob={pdfBlob}
-          isBuilding={isBuilding}
-          error={pdfError}
-          className="h-full rounded-lg shadow-lg overflow-hidden border-2 border-gray-200"
-        />
+      <div className="border-t-2 lg:border-t-0 lg:border-l-2 border-divider bg-surface">
+        <div className="lg:sticky lg:top-[72px] h-[70vh] lg:h-[calc(100vh-72px)]">
+          <PDFPreview blob={pdfBlob} isBuilding={isBuilding} error={pdfError} className="h-full overflow-hidden" />
+        </div>
       </div>
     </div>
   );
