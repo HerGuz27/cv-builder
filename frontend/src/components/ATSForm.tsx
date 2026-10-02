@@ -5,6 +5,7 @@ import type { MatchResult } from "../services/types";
 import { hasQuota, consume, getRemaining, FREE_MONTHLY_LIMIT } from "../services/quota";
 import MatchResultDisplay from "./MatchResult";
 import SaveApplicationForm from "./SaveApplicationForm";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 
 export default function ATSForm() {
   const [cvFile, setCvFile] = useState<File | null>(null);
@@ -102,7 +103,10 @@ export default function ATSForm() {
                 className="cursor-pointer text-blue-500 hover:underline"
               >
                 {cvFile ? (
-                  <span className="text-green-600 font-medium">✓ {cvFile.name}</span>
+                  <span className="text-green-600 font-medium inline-flex items-center gap-1.5">
+                    <CheckCircleOutlinedIcon sx={{ fontSize: 18 }} />
+                    {cvFile.name}
+                  </span>
                 ) : (
                   <span>Click para subir tu CV</span>
                 )}

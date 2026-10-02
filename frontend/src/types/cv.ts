@@ -1,5 +1,9 @@
 export interface PersonalInfo {
   nombre: string;
+  /** Título profesional bajo el nombre. Ej: "Lic. en Administración". */
+  titulo?: string;
+  /** Foto de perfil como data URL (JPEG). Sólo la usan las plantillas con foto. */
+  foto?: string;
   ubicacion: string;
   email: string;
   telefono: string;
@@ -54,6 +58,8 @@ export interface CVData {
   certificaciones?: Certification[];
   skills: Skills;
   proyectos?: Project[];
+  /** Plantilla elegida. Viaja con el CV para que los guardados recuerden su diseño. */
+  template?: CVTemplate;
 }
 
-export type CVTemplate = "harvard" | "modern" | "ats-friendly";
+export type CVTemplate = "harvard" | "moderno-azul";

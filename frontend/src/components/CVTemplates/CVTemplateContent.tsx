@@ -27,7 +27,7 @@ export const CVTemplateContent: React.FC<CVTemplateContentProps> = ({ data }) =>
         <h1 style={{ fontSize: "18px", fontWeight: "bold", margin: "0", marginBottom: "2px" }}>
           {data.personal.nombre}
         </h1>
-        <p style={{ fontSize: "10px", margin: "1px 0", color: "#333" }}>{data.personal.ubicacion}</p>
+        <p style={{ fontSize: "10px", margin: "2px 0", color: "#333" }}>{data.personal.ubicacion}</p>
         <p style={{ fontSize: "9px", margin: "1px 0", color: "#333" }}>
           <a href={`mailto:${data.personal.email}`} style={{ textDecoration: "none", color: "#000" }}>
             {data.personal.email}
@@ -64,7 +64,7 @@ export const CVTemplateContent: React.FC<CVTemplateContentProps> = ({ data }) =>
             margin: "0 0 3px 0",
           }}
         >
-          OBJETIVO PROFESIONAL
+          RESUMEN PROFESIONAL
         </h2>
         <p style={{ fontSize: "10px", margin: "0", lineHeight: "1.35" }}>{data.resumen}</p>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Experience } from "../../../types/cv";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface ExperienceEditorProps {
   experiencia: Experience[];
@@ -153,7 +154,7 @@ export const ExperienceEditor: React.FC<ExperienceEditorProps> = ({ experiencia,
                         onClick={() => handleRemoveDescription(index, descIndex)}
                         className="px-3 py-2 text-red-600 hover:bg-red-50 rounded font-medium text-sm"
                       >
-                        ✕
+                        <CloseIcon sx={{ fontSize: 18 }} />
                       </button>
                     </div>
                   ))}

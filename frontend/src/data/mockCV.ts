@@ -3,6 +3,7 @@ import { CVData } from "../types/cv";
 export const mockCVData: CVData = {
   personal: {
     nombre: "Juan Martínez García",
+    titulo: "Ingeniero de Software",
     ubicacion: "Montevideo, Uruguay",
     email: "juan.martinez@email.com",
     telefono: "+598 99 123 456",
@@ -92,5 +93,6 @@ export const mockCVData: CVData = {
       url: "github.com/juanmartinez/job-search",
       tecnologias: ["React", "TypeScript", "Claude API", "Tailwind"]
     }
-  ]
+  ],
+  template: "harvard"
 };

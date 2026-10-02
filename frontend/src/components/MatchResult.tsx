@@ -1,4 +1,7 @@
 import type { MatchResult } from "../services/types";
+import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
+import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
+import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 
 const getColorForPercentage = (percentage: number): string => {
   if (percentage >= 80) return "text-green-600";
@@ -53,7 +56,10 @@ export default function MatchResultDisplay({
       {/* Strengths */}
       {result.fortalezas.length > 0 && (
         <div className="mb-6">
-          <h3 className="font-semibold text-green-700 mb-2">✓ Fortalezas</h3>
+          <h3 className="font-semibold text-green-700 mb-2 flex items-center gap-1.5">
+            <CheckCircleOutlinedIcon sx={{ fontSize: 20 }} />
+            Fortalezas
+          </h3>
           <ul className="space-y-1">
             {result.fortalezas.map((strength, i) => (
               <li key={i} className="text-sm text-gray-700">
@@ -67,7 +73,10 @@ export default function MatchResultDisplay({
       {/* Gaps */}
       {result.brechas.length > 0 && (
         <div className="mb-6">
-          <h3 className="font-semibold text-red-700 mb-2">✗ Brechas de Habilidades</h3>
+          <h3 className="font-semibold text-red-700 mb-2 flex items-center gap-1.5">
+            <CancelOutlinedIcon sx={{ fontSize: 20 }} />
+            Brechas de Habilidades
+          </h3>
           <ul className="space-y-1">
             {result.brechas.map((gap, i) => (
               <li key={i} className="text-sm text-gray-700">
@@ -81,8 +90,9 @@ export default function MatchResultDisplay({
       {/* Recommendations */}
       {result.recomendaciones.length > 0 && (
         <div>
-          <h3 className="font-semibold text-blue-700 mb-2">
-            💡 Recomendaciones
+          <h3 className="font-semibold text-blue-700 mb-2 flex items-center gap-1.5">
+            <LightbulbOutlinedIcon sx={{ fontSize: 20 }} />
+            Recomendaciones
           </h3>
           <ul className="space-y-1">
             {result.recomendaciones.map((rec, i) => (

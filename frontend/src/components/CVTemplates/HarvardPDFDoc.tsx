@@ -28,9 +28,6 @@ const styles = StyleSheet.create({
 
   // Encabezado
   header: {
-    borderBottomWidth: 1,
-    borderBottomColor: "#000000",
-    borderBottomStyle: "solid",
     paddingBottom: 6,
     marginBottom: 4,
   },
@@ -41,9 +38,10 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 3,
   },
-  ubicacion: { fontSize: 9, textAlign: "center", color: "#333333" },
+  ubicacion: { fontSize: 9, textAlign: "center", color: "#333333", marginTop:2  },
   contacto: { fontSize: 9, textAlign: "center", color: "#333333", marginTop: 2 },
   link: { color: "#000000", textDecoration: "none" },
+  tituloProfesional: { fontSize: 10.5, textAlign: "center", color: "#333333", marginTop: 5 },
 
   // Secciones
   section: { marginTop: 9 },
@@ -119,6 +117,7 @@ export const HarvardPDFDoc: React.FC<HarvardPDFDocProps> = ({ data }) => {
         {/* Encabezado */}
         <View style={styles.header}>
           <Text style={styles.nombre}>{personal.nombre}</Text>
+          {personal.titulo ? <Text style={styles.tituloProfesional}>{personal.titulo}</Text> : null}
           {personal.ubicacion ? <Text style={styles.ubicacion}>{personal.ubicacion}</Text> : null}
           <Text style={styles.contacto}>
             {personal.email ? (
@@ -157,7 +156,7 @@ export const HarvardPDFDoc: React.FC<HarvardPDFDocProps> = ({ data }) => {
 
         {/* Objetivo profesional */}
         {resumen ? (
-          <Section title="OBJETIVO PROFESIONAL">
+          <Section title="RESUMEN PROFESIONAL">
             <Text>{resumen}</Text>
           </Section>
         ) : null}

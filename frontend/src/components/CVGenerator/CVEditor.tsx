@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { CVData } from "../../types/cv";
 import { PDFPreview } from "./PDFPreview";
 import { PersonalInfoEditor } from "./editors/PersonalInfoEditor";
@@ -7,6 +7,15 @@ import { ExperienceEditor } from "./editors/ExperienceEditor";
 import { EducationEditor } from "./editors/EducationEditor";
 import { SkillsEditor } from "./editors/SkillsEditor";
 import { CertificationsEditor } from "./editors/CertificationsEditor";
+import { TemplatePicker } from "./editors/TemplatePicker";
+import { getTemplate } from "../CVTemplates/registry";
+import PaletteOutlinedIcon from "@mui/icons-material/PaletteOutlined";
+import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
+import DescriptionOutlinedIcon from "@mui/icons-material/DescriptionOutlined";
+import WorkOutlinedIcon from "@mui/icons-material/WorkOutlined";
+import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
+import BoltOutlinedIcon from "@mui/icons-material/BoltOutlined";
+import EmojiEventsOutlinedIcon from "@mui/icons-material/EmojiEventsOutlined";
 
 interface CVEditorProps {
   data: CVData;
@@ -17,18 +26,31 @@ interface CVEditorProps {
   pdfError?: string | null;
 }
 
-type Section = "personal" | "resumen" | "experiencia" | "educacion" | "skills" | "certificaciones";
+type Section =
+  | "plantilla"
+  | "personal"
+  | "resumen"
+  | "experiencia"
+  | "educacion"
+  | "skills"
+  | "certificaciones";
 
 export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isBuilding, pdfError }) => {
   const [activeSection, setActiveSection] = useState<Section>("personal");
+  const renderCount = useRef(0);
+  renderCount.current++;
+  console.log("[CVEditor] render #", renderCount.current, "data.personal.nombre:", data.personal.nombre);
 
-  const sections: { id: Section; label: string; icon: string }[] = [
-    { id: "personal", label: "Datos Personales", icon: "👤" },
-    { id: "resumen", label: "Resumen", icon: "📝" },
-    { id: "experiencia", label: "Experiencia", icon: "💼" },
-    { id: "educacion", label: "Educación", icon: "🎓" },
-    { id: "skills", label: "Skills", icon: "⚡" },
-    { id: "certificaciones", label: "Certificaciones", icon: "🏆" },
+  const templateActual = getTemplate(data.template).id;
+
+  const sections: { id: Section; label: string; icon: React.ElementType }[] = [
+    { id: "plantilla", label: "Plantilla", icon: PaletteOutlinedIcon },
+    { id: "personal", label: "Datos Personales", icon: PersonOutlinedIcon },
+    { id: "resumen", label: "Resumen", icon: DescriptionOutlinedIcon },
+    { id: "experiencia", label: "Experiencia", icon: WorkOutlinedIcon },
+    { id: "educacion", label: "Educación", icon: SchoolOutlinedIcon },
+    { id: "skills", label: "Skills", icon: BoltOutlinedIcon },
+    { id: "certificaciones", label: "Certificaciones", icon: EmojiEventsOutlinedIcon },
   ];
 
   return (
@@ -48,7 +70,9 @@ export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isB
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                 }`}
               >
-                <span className="hidden sm:inline">{section.icon} </span>
+                <span className="hidden sm:inline-flex items-center align-middle mr-1.5">
+                  <section.icon sx={{ fontSize: 18 }} />
+                </span>
                 {section.label}
               </button>
             ))}
@@ -57,10 +81,19 @@ export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isB
 
         {/* Section Content */}
         <div className="bg-white rounded-lg shadow-md p-6">
+          {activeSection === "plantilla" && (
+            <TemplatePicker
+              value={templateActual}
+              onChange={(template) => onChange({ ...data, template })}
+              tieneFoto={!!data.personal.foto}
+              onIrAFoto={() => setActiveSection("personal")}
+            />
+          )}
           {activeSection === "personal" && (
             <PersonalInfoEditor
               data={data.personal}
               onChange={(personal) => onChange({ ...data, personal })}
+              usaFoto={getTemplate(data.template).usaFoto}
             />
           )}
           {activeSection === "resumen" && (

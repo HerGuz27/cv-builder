@@ -118,7 +118,7 @@ export const PDFPreview: React.FC<PDFPreviewProps> = ({ blob, isBuilding, error,
 
       {error && <div className="bg-red-50 text-red-700 text-sm px-4 py-2 border-b border-red-200">{error}</div>}
 
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4">
+      <div ref={scrollRef} className="flex-1 overflow-y-scroll p-4">
         <div ref={pagesRef} />
         {!hasRendered && (
           <div className="flex items-center justify-center py-20 text-sm text-gray-500">Generando PDF…</div>

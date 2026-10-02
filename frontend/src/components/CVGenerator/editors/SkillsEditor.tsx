@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Skills } from "../../../types/cv";
+import CloseIcon from "@mui/icons-material/Close";
 
 interface SkillsEditorProps {
   skills: Skills;
@@ -123,7 +124,7 @@ export const SkillsEditor: React.FC<SkillsEditorProps> = ({ skills, onChange }) 
                         onClick={() => handleRemoveSkill(category, index)}
                         className="px-3 py-2 text-red-600 hover:bg-red-50 rounded font-medium text-sm"
                       >
-                        ✕
+                        <CloseIcon sx={{ fontSize: 18 }} />
                       </button>
                     </div>
                   ))}
