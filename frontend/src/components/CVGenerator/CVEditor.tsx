@@ -7,6 +7,7 @@ import { ExperienceEditor } from "./editors/ExperienceEditor";
 import { EducationEditor } from "./editors/EducationEditor";
 import { SkillsEditor } from "./editors/SkillsEditor";
 import { CertificationsEditor } from "./editors/CertificationsEditor";
+import { ProjectsEditor } from "./editors/ProjectsEditor";
 import { TemplatePicker } from "./editors/TemplatePicker";
 import { getTemplate } from "../CVTemplates/registry";
 import PaletteOutlinedIcon from "@mui/icons-material/PaletteOutlined";
@@ -16,6 +17,7 @@ import WorkOutlinedIcon from "@mui/icons-material/WorkOutlined";
 import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
 import BoltOutlinedIcon from "@mui/icons-material/BoltOutlined";
 import EmojiEventsOutlinedIcon from "@mui/icons-material/EmojiEventsOutlined";
+import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 
 interface CVEditorProps {
   data: CVData;
@@ -33,6 +35,7 @@ type Section =
   | "experiencia"
   | "educacion"
   | "skills"
+  | "proyectos"
   | "certificaciones";
 
 export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isBuilding, pdfError }) => {
@@ -50,6 +53,7 @@ export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isB
     { id: "experiencia", label: "Experiencia", icon: WorkOutlinedIcon },
     { id: "educacion", label: "Educación", icon: SchoolOutlinedIcon },
     { id: "skills", label: "Skills", icon: BoltOutlinedIcon },
+    { id: "proyectos", label: "Proyectos", icon: FolderOutlinedIcon },
     { id: "certificaciones", label: "Certificaciones", icon: EmojiEventsOutlinedIcon },
   ];
 
@@ -134,6 +138,12 @@ export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isB
             <SkillsEditor
               skills={data.skills}
               onChange={(skills) => onChange({ ...data, skills })}
+            />
+          )}
+          {activeSection === "proyectos" && (
+            <ProjectsEditor
+              proyectos={data.proyectos || []}
+              onChange={(proyectos) => onChange({ ...data, proyectos })}
             />
           )}
           {activeSection === "certificaciones" && (
