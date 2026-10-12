@@ -45,34 +45,27 @@ export function useCVPdf(data: CVData, debounceMs = 500): UseCVPdfResult {
 
   // Efecto principal: inicia builds con debounce.
   useEffect(() => {
-    console.log("[useCVPdf] Effect triggered. isGenerating:", isGenerating.current, "hasPendingBuild:", hasPendingBuild.current);
 
     if (isGenerating.current) {
       // Ya hay un build en vuelo. Marca que hay cambios pendientes
       // y deja que el build actual sea quien lance el próximo.
-      console.log("[useCVPdf] Build en vuelo, marcando pending");
       hasPendingBuild.current = true;
       return;
     }
 
     const id = ++runId.current;
-    console.log("[useCVPdf] Iniciando build #", id, "con debounce de", debounceMs, "ms");
     setIsBuilding(true);
     hasPendingBuild.current = false;
 
     const timer = setTimeout(async () => {
-      console.log("[useCVPdf] Debounce terminó, generando PDF #", id);
       isGenerating.current = true;
       try {
         const result = await buildCVPdfBlob(data);
-        console.log("[useCVPdf] PDF generado, runId.current:", runId.current, "id:", id);
         if (id !== runId.current) {
-          console.log("[useCVPdf] PDF obsoleto, descartando");
           return;
         }
         setBlob(result);
         setError(null);
-        console.log("[useCVPdf] PDF guardado exitosamente");
       } catch (err) {
         if (id !== runId.current) return;
         console.error("Error generando el PDF del CV:", err);
@@ -80,12 +73,10 @@ export function useCVPdf(data: CVData, debounceMs = 500): UseCVPdfResult {
       } finally {
         isGenerating.current = false;
         if (id === runId.current) {
-          console.log("[useCVPdf] Build #", id, "terminado, isBuilding=false");
           setIsBuilding(false);
         }
         // Si hubo cambios pendientes, lanza otro build.
         if (hasPendingBuild.current) {
-          console.log("[useCVPdf] Hay builds pendientes, iniciando nuevo build");
           hasPendingBuild.current = false;
           latest.current = data;
           runId.current++;
@@ -111,7 +102,6 @@ export function useCVPdf(data: CVData, debounceMs = 500): UseCVPdfResult {
     }, debounceMs);
 
     return () => {
-      console.log("[useCVPdf] Efecto cleanup, cancelando timer para build #", id);
       clearTimeout(timer);
     };
   }, [data, debounceMs]);

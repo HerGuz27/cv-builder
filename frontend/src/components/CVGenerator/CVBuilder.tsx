@@ -31,14 +31,6 @@ export const CVBuilder: React.FC<CVBuilderProps> = ({ data: initialData }) => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [totalCVs, setTotalCVs] = useState<number | null>(null);
 
-  const renderCount = useRef(0);
-  renderCount.current++;
-  console.log(
-    "[CVBuilder] render #",
-    renderCount.current,
-    "cvData.personal.nombre:",
-    cvData.personal.nombre
-  );
 
   const menuRef = useRef<HTMLDivElement>(null);
 

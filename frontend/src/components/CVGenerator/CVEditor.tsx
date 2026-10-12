@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { CVData } from "../../types/cv";
 import { PDFPreview } from "./PDFPreview";
 import { PersonalInfoEditor } from "./editors/PersonalInfoEditor";
@@ -40,9 +40,6 @@ type Section =
 
 export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isBuilding, pdfError }) => {
   const [activeSection, setActiveSection] = useState<Section>("personal");
-  const renderCount = useRef(0);
-  renderCount.current++;
-  console.log("[CVEditor] render #", renderCount.current, "data.personal.nombre:", data.personal.nombre);
 
   const templateActual = getTemplate(data.template).id;
 
