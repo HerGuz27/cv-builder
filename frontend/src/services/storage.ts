@@ -1,58 +1,88 @@
+import { supabase } from "./supabase";
 import type { JobApplication, MatchResult } from "./types";
 
-const STORAGE_KEY = "ats_applications";
+interface ApplicationRow {
+  id: string;
+  titulo: string;
+  empresa: string;
+  url: string;
+  estado: JobApplication["estado"];
+  porcentaje_match: number;
+  notas: string | null;
+  fecha_postulacion: string;
+  job_description: string;
+  cv_file_name: string;
+  result: MatchResult;
+}
 
-export function saveApplication(
+const fromRow = (r: ApplicationRow): JobApplication => ({
+  id: r.id,
+  titulo: r.titulo,
+  empresa: r.empresa,
+  url: r.url,
+  estado: r.estado,
+  porcentajeMatch: r.porcentaje_match,
+  notas: r.notas ?? undefined,
+  fechaPostulacion: r.fecha_postulacion,
+  jobDescription: r.job_description,
+  cvFileName: r.cv_file_name,
+  result: r.result,
+});
+
+export async function saveApplication(
   titulo: string,
   empresa: string,
   url: string,
-  estado: "postulado" | "entrevista" | "rechazado" | "oferta",
+  estado: JobApplication["estado"],
   porcentajeMatch: number,
   jobDescription: string,
   cvFileName: string,
   result: MatchResult,
   notas?: string
-): JobApplication {
-  const application: JobApplication = {
-    id: Date.now().toString(),
-    titulo,
-    empresa,
-    url,
-    estado,
-    porcentajeMatch,
-    notas,
-    fechaPostulacion: new Date().toISOString(),
-    jobDescription,
-    cvFileName,
-    result,
-  };
+): Promise<JobApplication> {
+  const { data, error } = await supabase
+    .from("applications")
+    .insert({
+      titulo,
+      empresa,
+      url,
+      estado,
+      porcentaje_match: porcentajeMatch,
+      notas: notas ?? null,
+      job_description: jobDescription,
+      cv_file_name: cvFileName,
+      result,
+    })
+    .select()
+    .single();
 
-  const applications = getAllApplications();
-  applications.unshift(application);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(applications));
-
-  return application;
+  if (error) throw new Error("No se pudo guardar la postulación");
+  return fromRow(data as ApplicationRow);
 }
 
-export function getAllApplications(): JobApplication[] {
-  const stored = localStorage.getItem(STORAGE_KEY);
-  return stored ? JSON.parse(stored) : [];
+export async function getAllApplications(): Promise<JobApplication[]> {
+  const { data, error } = await supabase
+    .from("applications")
+    .select("*")
+    .order("fecha_postulacion", { ascending: false });
+
+  if (error) throw new Error("No se pudieron cargar las postulaciones");
+  return (data as ApplicationRow[]).map(fromRow);
 }
 
-export function deleteApplication(id: string): void {
-  const applications = getAllApplications();
-  const filtered = applications.filter((a) => a.id !== id);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered));
+export async function deleteApplication(id: string): Promise<void> {
+  const { error } = await supabase.from("applications").delete().eq("id", id);
+  if (error) throw new Error("No se pudo eliminar la postulación");
 }
 
-export function updateApplication(
+export async function updateApplication(
   id: string,
-  updates: Partial<JobApplication>
-): void {
-  const applications = getAllApplications();
-  const application = applications.find((a) => a.id === id);
-  if (application) {
-    Object.assign(application, updates);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(applications));
-  }
+  updates: Partial<Pick<JobApplication, "estado" | "notas">>
+): Promise<void> {
+  const patch: Record<string, unknown> = {};
+  if (updates.estado !== undefined) patch.estado = updates.estado;
+  if (updates.notas !== undefined) patch.notas = updates.notas;
+
+  const { error } = await supabase.from("applications").update(patch).eq("id", id);
+  if (error) throw new Error("No se pudo actualizar la postulación");
 }

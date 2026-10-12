@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { CVData } from "../../types/cv";
 import { PDFPreview } from "./PDFPreview";
 import { PersonalInfoEditor } from "./editors/PersonalInfoEditor";
@@ -7,6 +7,7 @@ import { ExperienceEditor } from "./editors/ExperienceEditor";
 import { EducationEditor } from "./editors/EducationEditor";
 import { SkillsEditor } from "./editors/SkillsEditor";
 import { CertificationsEditor } from "./editors/CertificationsEditor";
+import { ProjectsEditor } from "./editors/ProjectsEditor";
 import { TemplatePicker } from "./editors/TemplatePicker";
 import { getTemplate } from "../CVTemplates/registry";
 import PaletteOutlinedIcon from "@mui/icons-material/PaletteOutlined";
@@ -16,6 +17,7 @@ import WorkOutlinedIcon from "@mui/icons-material/WorkOutlined";
 import SchoolOutlinedIcon from "@mui/icons-material/SchoolOutlined";
 import BoltOutlinedIcon from "@mui/icons-material/BoltOutlined";
 import EmojiEventsOutlinedIcon from "@mui/icons-material/EmojiEventsOutlined";
+import FolderOutlinedIcon from "@mui/icons-material/FolderOutlined";
 
 interface CVEditorProps {
   data: CVData;
@@ -33,13 +35,11 @@ type Section =
   | "experiencia"
   | "educacion"
   | "skills"
+  | "proyectos"
   | "certificaciones";
 
 export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isBuilding, pdfError }) => {
   const [activeSection, setActiveSection] = useState<Section>("personal");
-  const renderCount = useRef(0);
-  renderCount.current++;
-  console.log("[CVEditor] render #", renderCount.current, "data.personal.nombre:", data.personal.nombre);
 
   const templateActual = getTemplate(data.template).id;
 
@@ -50,37 +50,54 @@ export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isB
     { id: "experiencia", label: "Experiencia", icon: WorkOutlinedIcon },
     { id: "educacion", label: "Educación", icon: SchoolOutlinedIcon },
     { id: "skills", label: "Skills", icon: BoltOutlinedIcon },
+    { id: "proyectos", label: "Proyectos", icon: FolderOutlinedIcon },
     { id: "certificaciones", label: "Certificaciones", icon: EmojiEventsOutlinedIcon },
   ];
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 py-6 px-4">
-      {/* Editor Panel */}
-      <div className="space-y-4">
-        {/* Section Tabs */}
-        <div className="bg-white rounded-lg shadow-md p-4 sticky top-20 z-40">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-            {sections.map((section) => (
+    <div className="grid grid-cols-1 lg:grid-cols-[184px_minmax(0,1fr)_minmax(440px,48%)] xl:grid-cols-[208px_minmax(0,1fr)_minmax(600px,52%)] border-b-2 border-divider">
+      {/* Section rail (desktop) / tabs (mobile) */}
+      <nav
+        aria-label="Secciones del CV"
+        className="border-b-2 lg:border-b-0 lg:border-r-2 border-divider"
+      >
+        <div className="lg:sticky lg:top-[72px] lg:py-6">
+        <div className="hidden lg:block px-5 pb-4">
+          <div className="lbl">Secciones</div>
+        </div>
+        <div className="flex lg:flex-col overflow-x-auto lg:overflow-visible px-4 lg:px-0 lg:border-t-2 border-divider">
+          {sections.map((section) => {
+            const active = activeSection === section.id;
+            return (
               <button
                 key={section.id}
                 onClick={() => setActiveSection(section.id)}
-                className={`px-3 py-2 rounded-lg font-medium text-sm transition-colors ${
-                  activeSection === section.id
-                    ? "bg-blue-600 text-white"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                aria-current={active}
+                className={`rail-item shrink-0 px-3 pt-3 pb-2.5 lg:px-5 lg:py-3 border-b-[3px] lg:border-b lg:border-l-[3px] ${
+                  active
+                    ? "border-b-accent lg:border-b-divider lg:border-l-accent"
+                    : "border-b-transparent lg:border-b-divider lg:border-l-transparent"
                 }`}
               >
-                <span className="hidden sm:inline-flex items-center align-middle mr-1.5">
+                <span className="hidden lg:inline-flex items-center">
                   <section.icon sx={{ fontSize: 18 }} />
                 </span>
                 {section.label}
               </button>
-            ))}
-          </div>
+            );
+          })}
+        </div>
+        </div>
+      </nav>
+
+      {/* Editor Panel */}
+      <div className="px-4 py-6 lg:px-8 lg:py-7 min-w-0">
+        <div className="lbl mb-4">
+          Sección {sections.findIndex((s) => s.id === activeSection) + 1} de {sections.length}
         </div>
 
         {/* Section Content */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+        <div>
           {activeSection === "plantilla" && (
             <TemplatePicker
               value={templateActual}
@@ -120,6 +137,12 @@ export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isB
               onChange={(skills) => onChange({ ...data, skills })}
             />
           )}
+          {activeSection === "proyectos" && (
+            <ProjectsEditor
+              proyectos={data.proyectos || []}
+              onChange={(proyectos) => onChange({ ...data, proyectos })}
+            />
+          )}
           {activeSection === "certificaciones" && (
             <CertificationsEditor
               certificaciones={data.certificaciones || []}
@@ -130,13 +153,10 @@ export const CVEditor: React.FC<CVEditorProps> = ({ data, onChange, pdfBlob, isB
       </div>
 
       {/* Preview Panel */}
-      <div className="sticky top-20 h-[calc(100vh-120px)]">
-        <PDFPreview
-          blob={pdfBlob}
-          isBuilding={isBuilding}
-          error={pdfError}
-          className="h-full rounded-lg shadow-lg overflow-hidden border-2 border-gray-200"
-        />
+      <div className="border-t-2 lg:border-t-0 lg:border-l-2 border-divider bg-surface">
+        <div className="lg:sticky lg:top-[72px] h-[70vh] lg:h-[calc(100vh-72px)]">
+          <PDFPreview blob={pdfBlob} isBuilding={isBuilding} error={pdfError} className="h-full overflow-hidden" />
+        </div>
       </div>
     </div>
   );

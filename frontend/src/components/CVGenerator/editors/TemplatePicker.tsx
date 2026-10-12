@@ -73,8 +73,8 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({
 }) => (
   <div className="space-y-4">
     <div>
-      <h3 className="text-lg font-semibold text-gray-900">Plantilla</h3>
-      <p className="text-sm text-gray-500">
+      <h3 className="text-lg">Plantilla</h3>
+      <p className="text-sm text-muted mt-1">
         Cambiar de plantilla no toca tus datos: podés probar y volver cuando quieras.
       </p>
     </div>
@@ -88,27 +88,23 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({
             type="button"
             onClick={() => onChange(template.id)}
             aria-pressed={activa}
-            className={`text-left rounded-xl border-2 p-3 transition-colors ${
+            className={`text-left border p-3 transition-colors ${
               activa
-                ? "border-blue-600 bg-blue-50"
-                : "border-gray-200 bg-white hover:border-gray-300"
+                ? "border-2 border-accent bg-accent-100"
+                : "border-divider bg-surface hover:bg-neutral-200"
             }`}
           >
             <Thumb id={template.id} />
 
             <div className="flex items-center justify-between mt-3">
-              <span className="font-semibold text-gray-900 text-sm">{template.nombre}</span>
-              {activa && (
-                <span className="text-xs font-semibold text-blue-700 bg-blue-100 px-2 py-0.5 rounded-full">
-                  En uso
-                </span>
-              )}
+              <span className="acc-title">{template.nombre}</span>
+              {activa && <span className="tag tag-accent">En uso</span>}
             </div>
-            <p className="text-xs text-gray-500 mt-1">{template.descripcion}</p>
-            <p className="text-xs text-gray-400 mt-1.5">{template.ats}</p>
+            <p className="text-xs text-muted mt-1">{template.descripcion}</p>
+            <p className="text-xs text-muted mt-1.5">{template.ats}</p>
 
             {template.usaFoto && !tieneFoto && (
-              <p className="text-xs text-amber-700 bg-amber-50 rounded-md px-2 py-1 mt-2">
+              <p className="tag tag-neutral mt-2">
                 Usa foto: sin foto se muestran tus iniciales.
               </p>
             )}
@@ -121,7 +117,7 @@ export const TemplatePicker: React.FC<TemplatePickerProps> = ({
       <button
         type="button"
         onClick={onIrAFoto}
-        className="text-sm font-medium text-blue-600 hover:text-blue-700 inline-flex items-center gap-1"
+        className="btn btn-ghost"
       >
         Subir mi foto
         <ArrowForwardIcon sx={{ fontSize: 16 }} />

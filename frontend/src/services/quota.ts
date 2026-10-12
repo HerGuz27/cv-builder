@@ -1,43 +1,24 @@
-const QUOTA_KEY = "ats_quota";
+import { supabase } from "./supabase";
 
+/** Debe coincidir con FREE_MONTHLY_LIMIT de la Edge Function job-ats (que es la que aplica el límite). */
 export const FREE_MONTHLY_LIMIT = 3;
 
-interface Quota {
-  period: string; // "2026-08"
-  used: number;
-}
-
+/** Mes actual en UTC, igual que el servidor. */
 function currentPeriod(): string {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+  return new Date().toISOString().slice(0, 7);
 }
 
-function read(): Quota {
-  const stored = localStorage.getItem(QUOTA_KEY);
-  const period = currentPeriod();
+/**
+ * Análisis que le quedan al usuario este mes. Es solo informativo: la cuota
+ * se descuenta y se hace cumplir en la Edge Function, no acá.
+ */
+export async function getRemaining(): Promise<number> {
+  const { data, error } = await supabase
+    .from("ats_usage")
+    .select("used")
+    .eq("period", currentPeriod())
+    .maybeSingle();
 
-  if (!stored) return { period, used: 0 };
-
-  try {
-    const parsed = JSON.parse(stored) as Quota;
-    // Reset on new month
-    if (parsed.period !== period) return { period, used: 0 };
-    return parsed;
-  } catch {
-    return { period, used: 0 };
-  }
-}
-
-export function getRemaining(): number {
-  return Math.max(0, FREE_MONTHLY_LIMIT - read().used);
-}
-
-export function hasQuota(): boolean {
-  return getRemaining() > 0;
-}
-
-export function consume(): void {
-  const quota = read();
-  quota.used += 1;
-  localStorage.setItem(QUOTA_KEY, JSON.stringify(quota));
+  if (error) throw new Error("No se pudo consultar tu cuota");
+  return Math.max(0, FREE_MONTHLY_LIMIT - (data?.used ?? 0));
 }

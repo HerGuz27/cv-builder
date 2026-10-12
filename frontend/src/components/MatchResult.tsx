@@ -3,106 +3,75 @@ import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import CancelOutlinedIcon from "@mui/icons-material/CancelOutlined";
 import LightbulbOutlinedIcon from "@mui/icons-material/LightbulbOutlined";
 
-const getColorForPercentage = (percentage: number): string => {
-  if (percentage >= 80) return "text-green-600";
-  if (percentage >= 60) return "text-yellow-600";
-  if (percentage >= 40) return "text-orange-600";
-  return "text-red-600";
-};
+/** Alto match = tinta oscura; bajo = acento rojo. Sin colores fuera del sistema. */
+export const matchTextClass = (pct: number): string =>
+  pct >= 60 ? "text-ink" : "text-accent-700";
+export const matchBarClass = (pct: number): string =>
+  pct >= 60 ? "bg-ink" : "bg-accent";
 
-const getBgColorForPercentage = (percentage: number): string => {
-  if (percentage >= 80) return "bg-green-50 border-green-200";
-  if (percentage >= 60) return "bg-yellow-50 border-yellow-200";
-  if (percentage >= 40) return "bg-orange-50 border-orange-200";
-  return "bg-red-50 border-red-200";
-};
-
-export default function MatchResultDisplay({
-  result,
+function Section({
+  icon,
+  title,
+  items,
 }: {
-  result: MatchResult;
+  icon: React.ReactNode;
+  title: string;
+  items: string[];
 }) {
+  if (items.length === 0) return null;
   return (
-    <div className={`border rounded-lg p-6 ${getBgColorForPercentage(result.porcentajeMatch)}`}>
-      {/* Match Score */}
+    <div className="mb-6 last:mb-0">
+      <h3 className="text-base mb-2 flex items-center gap-1.5">
+        {icon}
+        {title}
+      </h3>
+      <ul className="space-y-1">
+        {items.map((item, i) => (
+          <li key={i} className="text-sm text-muted">
+            • {item}
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+export default function MatchResultDisplay({ result }: { result: MatchResult }) {
+  return (
+    <div className="bg-surface border-2 border-divider p-4 sm:p-6">
       <div className="mb-6">
+        <div className="lbl mb-2">Resultado</div>
         <div className="flex items-center justify-between mb-2">
-          <h2 className="text-xl font-bold">Porcentaje de Match</h2>
-          <span className={`text-4xl font-bold ${getColorForPercentage(result.porcentajeMatch)}`}>
+          <h2 className="text-xl">Porcentaje de Match</h2>
+          <span className={`text-4xl font-extrabold ${matchTextClass(result.porcentajeMatch)}`}>
             {result.porcentajeMatch}%
           </span>
         </div>
-        <p className="text-gray-700">{result.razonamiento}</p>
+        <p className="text-sm text-muted">{result.razonamiento}</p>
       </div>
 
-      {/* Progress Bar */}
-      <div className="mb-6">
-        <div className="w-full bg-gray-200 rounded-full h-3">
-          <div
-            className={`h-3 rounded-full transition-all ${
-              result.porcentajeMatch >= 80
-                ? "bg-green-500"
-                : result.porcentajeMatch >= 60
-                  ? "bg-yellow-500"
-                  : result.porcentajeMatch >= 40
-                    ? "bg-orange-500"
-                    : "bg-red-500"
-            }`}
-            style={{ width: `${result.porcentajeMatch}%` }}
-          ></div>
-        </div>
+      <div className="mb-6 w-full bg-neutral-300 h-2">
+        <div
+          className={`h-2 transition-all ${matchBarClass(result.porcentajeMatch)}`}
+          style={{ width: `${result.porcentajeMatch}%` }}
+        />
       </div>
 
-      {/* Strengths */}
-      {result.fortalezas.length > 0 && (
-        <div className="mb-6">
-          <h3 className="font-semibold text-green-700 mb-2 flex items-center gap-1.5">
-            <CheckCircleOutlinedIcon sx={{ fontSize: 20 }} />
-            Fortalezas
-          </h3>
-          <ul className="space-y-1">
-            {result.fortalezas.map((strength, i) => (
-              <li key={i} className="text-sm text-gray-700">
-                • {strength}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Gaps */}
-      {result.brechas.length > 0 && (
-        <div className="mb-6">
-          <h3 className="font-semibold text-red-700 mb-2 flex items-center gap-1.5">
-            <CancelOutlinedIcon sx={{ fontSize: 20 }} />
-            Brechas de Habilidades
-          </h3>
-          <ul className="space-y-1">
-            {result.brechas.map((gap, i) => (
-              <li key={i} className="text-sm text-gray-700">
-                • {gap}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
-
-      {/* Recommendations */}
-      {result.recomendaciones.length > 0 && (
-        <div>
-          <h3 className="font-semibold text-blue-700 mb-2 flex items-center gap-1.5">
-            <LightbulbOutlinedIcon sx={{ fontSize: 20 }} />
-            Recomendaciones
-          </h3>
-          <ul className="space-y-1">
-            {result.recomendaciones.map((rec, i) => (
-              <li key={i} className="text-sm text-gray-700">
-                • {rec}
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <Section
+        icon={<CheckCircleOutlinedIcon sx={{ fontSize: 20 }} />}
+        title="Fortalezas"
+        items={result.fortalezas}
+      />
+      <Section
+        icon={<CancelOutlinedIcon className="text-accent-700" sx={{ fontSize: 20 }} />}
+        title="Brechas de Habilidades"
+        items={result.brechas}
+      />
+      <Section
+        icon={<LightbulbOutlinedIcon sx={{ fontSize: 20 }} />}
+        title="Recomendaciones"
+        items={result.recomendaciones}
+      />
     </div>
   );
 }

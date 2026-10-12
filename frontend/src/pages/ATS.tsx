@@ -1,59 +1,51 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import ATSForm from "../components/ATSForm";
 import MatchHistory from "../components/MatchHistory";
+import AccountMenu from "../components/AccountMenu";
 import ArticleOutlinedIcon from "@mui/icons-material/ArticleOutlined";
 import HistoryOutlinedIcon from "@mui/icons-material/HistoryOutlined";
 import EditNoteOutlinedIcon from "@mui/icons-material/EditNoteOutlined";
 
 export default function ATSPage() {
   const [activeTab, setActiveTab] = useState<"analyzer" | "history">("analyzer");
-  const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      {/* Navigation */}
-      <nav className="bg-white shadow">
-        <div className="max-w-6xl mx-auto px-6 py-4">
-          <h1 className="text-2xl font-bold">Job Search ATS</h1>
+    <div className="min-h-screen bg-ground">
+      {/* Header */}
+      <div className="bg-ground border-b-2 border-divider sticky top-0 z-50">
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 flex flex-wrap items-center gap-x-4 gap-y-2">
+          <div className="flex items-baseline gap-3 min-w-0 mr-auto">
+            <span className="text-lg font-extrabold tracking-tight">Nexocv</span>
+            <span className="hidden md:block text-xs text-muted truncate">Analizador ATS</span>
+          </div>
+          <Link to="/cv-builder" className="btn btn-secondary">
+            <EditNoteOutlinedIcon sx={{ fontSize: 18 }} />
+            Mi CV
+          </Link>
+          <AccountMenu showAtsLink={false} />
         </div>
-      </nav>
+      </div>
 
-      {/* Tabs */}
-      <div className="max-w-6xl mx-auto px-6 py-6">
-        <div className="flex gap-4 mb-6">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6">
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6">
           <button
             onClick={() => setActiveTab("analyzer")}
-            className={`px-6 py-2 rounded-lg font-medium transition inline-flex items-center gap-2 ${
-              activeTab === "analyzer"
-                ? "bg-blue-500 text-white"
-                : "bg-white text-gray-700 hover:bg-gray-50"
-            }`}
+            className={`btn ${activeTab === "analyzer" ? "btn-primary" : "btn-secondary"}`}
           >
-            <ArticleOutlinedIcon sx={{ fontSize: 20 }} />
+            <ArticleOutlinedIcon sx={{ fontSize: 18 }} />
             Analizador
           </button>
           <button
             onClick={() => setActiveTab("history")}
-            className={`px-6 py-2 rounded-lg font-medium transition inline-flex items-center gap-2 ${
-              activeTab === "history"
-                ? "bg-blue-500 text-white"
-                : "bg-white text-gray-700 hover:bg-gray-50"
-            }`}
+            className={`btn ${activeTab === "history" ? "btn-primary" : "btn-secondary"}`}
           >
-            <HistoryOutlinedIcon sx={{ fontSize: 20 }} />
+            <HistoryOutlinedIcon sx={{ fontSize: 18 }} />
             Historial
-          </button>
-          <button
-            onClick={() => navigate("/cv-builder")}
-            className="px-6 py-2 rounded-lg font-medium transition inline-flex items-center gap-2 bg-green-500 text-white hover:bg-green-600"
-          >
-            <EditNoteOutlinedIcon sx={{ fontSize: 20 }} />
-            Mi CV
           </button>
         </div>
 
-        {/* Content */}
         {activeTab === "analyzer" ? <ATSForm /> : <MatchHistory />}
       </div>
     </div>

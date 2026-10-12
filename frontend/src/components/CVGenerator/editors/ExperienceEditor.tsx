@@ -54,17 +54,17 @@ export const ExperienceEditor: React.FC<ExperienceEditorProps> = ({ experiencia,
   return (
     <div className="space-y-3">
       {experiencia.map((exp, index) => (
-        <div key={index} className="border border-gray-300 rounded-lg overflow-hidden">
+        <div key={index} className={`acc ${expandedIndex === index ? "acc-open" : ""}`}>
           <button
             onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
-            className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 flex items-center justify-between text-left"
+            className="acc-head"
           >
             <div className="flex-1">
-              <p className="font-medium text-gray-900">{exp.titulo}</p>
-              <p className="text-sm text-gray-600">{exp.empresa}</p>
+              <p className="acc-title">{exp.titulo}</p>
+              <p className="text-muted text-xs">{exp.empresa}</p>
             </div>
             <svg
-              className={`h-5 w-5 text-gray-500 transition-transform ${
+              className={`h-5 w-5 text-muted transition-transform ${
                 expandedIndex === index ? "rotate-180" : ""
               }`}
               fill="none"
@@ -76,66 +76,66 @@ export const ExperienceEditor: React.FC<ExperienceEditorProps> = ({ experiencia,
           </button>
 
           {expandedIndex === index && (
-            <div className="p-4 bg-white border-t border-gray-300 space-y-3">
+            <div className="acc-body space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Título del Puesto</label>
+                <label className="field-label">Título del Puesto</label>
                 <input
                   type="text"
                   value={exp.titulo}
                   onChange={(e) => handleUpdate(index, "titulo", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Empresa</label>
+                  <label className="field-label">Empresa</label>
                   <input
                     type="text"
                     value={exp.empresa}
                     onChange={(e) => handleUpdate(index, "empresa", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                  <label className="field-label">Ubicación</label>
                   <input
                     type="text"
                     value={exp.ubicacion || ""}
                     onChange={(e) => handleUpdate(index, "ubicacion", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Inicio (YYYY-MM)</label>
+                  <label className="field-label">Fecha Inicio (YYYY-MM)</label>
                   <input
                     type="text"
                     value={exp.fechaInicio}
                     onChange={(e) => handleUpdate(index, "fechaInicio", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Fecha Fin</label>
+                  <label className="field-label">Fecha Fin</label>
                   <input
                     type="text"
                     value={exp.fechaFin}
                     onChange={(e) => handleUpdate(index, "fechaFin", e.target.value)}
                     placeholder="Presente"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input"
                   />
                 </div>
               </div>
 
               <div>
                 <div className="flex items-center justify-between mb-2">
-                  <label className="text-sm font-medium text-gray-700">Descripción (logros)</label>
+                  <label className="field-label !mb-0">Descripción (logros)</label>
                   <button
                     onClick={() => handleAddDescription(index)}
-                    className="text-sm px-2 py-1 text-blue-600 hover:bg-blue-50 rounded"
+                    className="btn btn-ghost !min-h-0 !py-1 text-sm"
                   >
                     + Agregar
                   </button>
@@ -146,13 +146,13 @@ export const ExperienceEditor: React.FC<ExperienceEditorProps> = ({ experiencia,
                       <textarea
                         value={desc}
                         onChange={(e) => handleUpdateDescription(index, descIndex, e.target.value)}
-                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                        className="input flex-1 resize-none"
                         rows={2}
                         placeholder="Logro o responsabilidad..."
                       />
                       <button
                         onClick={() => handleRemoveDescription(index, descIndex)}
-                        className="px-3 py-2 text-red-600 hover:bg-red-50 rounded font-medium text-sm"
+                        className="btn btn-ghost btn-icon shrink-0"
                       >
                         <CloseIcon sx={{ fontSize: 18 }} />
                       </button>
@@ -163,7 +163,7 @@ export const ExperienceEditor: React.FC<ExperienceEditorProps> = ({ experiencia,
 
               <button
                 onClick={() => handleRemoveExperience(index)}
-                className="w-full px-4 py-2 mt-3 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-medium text-sm"
+                className="btn btn-ghost btn-block mt-3"
               >
                 Eliminar Experiencia
               </button>
@@ -174,7 +174,7 @@ export const ExperienceEditor: React.FC<ExperienceEditorProps> = ({ experiencia,
 
       <button
         onClick={handleAddExperience}
-        className="w-full px-4 py-3 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-medium text-sm border-2 border-dashed border-blue-300"
+        className="btn btn-secondary btn-dashed btn-block"
       >
         + Agregar Experiencia
       </button>

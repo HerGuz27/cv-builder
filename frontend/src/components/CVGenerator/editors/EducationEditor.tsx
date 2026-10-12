@@ -36,17 +36,17 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ educacion, onC
   return (
     <div className="space-y-3">
       {educacion.map((edu, index) => (
-        <div key={index} className="border border-gray-300 rounded-lg overflow-hidden">
+        <div key={index} className={`acc ${expandedIndex === index ? "acc-open" : ""}`}>
           <button
             onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
-            className="w-full px-4 py-3 bg-gray-50 hover:bg-gray-100 flex items-center justify-between text-left"
+            className="acc-head"
           >
             <div className="flex-1">
-              <p className="font-medium text-gray-900">{edu.titulo}</p>
-              <p className="text-sm text-gray-600">{edu.institucion}</p>
+              <p className="acc-title">{edu.titulo}</p>
+              <p className="text-muted text-xs">{edu.institucion}</p>
             </div>
             <svg
-              className={`h-5 w-5 text-gray-500 transition-transform ${
+              className={`h-5 w-5 text-muted transition-transform ${
                 expandedIndex === index ? "rotate-180" : ""
               }`}
               fill="none"
@@ -58,80 +58,80 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ educacion, onC
           </button>
 
           {expandedIndex === index && (
-            <div className="p-4 bg-white border-t border-gray-300 space-y-3">
+            <div className="acc-body space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Título/Carrera</label>
+                <label className="field-label">Título/Carrera</label>
                 <input
                   type="text"
                   value={edu.titulo}
                   onChange={(e) => handleUpdate(index, "titulo", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="input"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Institución</label>
+                  <label className="field-label">Institución</label>
                   <input
                     type="text"
                     value={edu.institucion}
                     onChange={(e) => handleUpdate(index, "institucion", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Ubicación</label>
+                  <label className="field-label">Ubicación</label>
                   <input
                     type="text"
                     value={edu.ubicacion || ""}
                     onChange={(e) => handleUpdate(index, "ubicacion", e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Año Inicio</label>
+                  <label className="field-label">Año Inicio</label>
                   <input
                     type="text"
                     value={edu.fechaInicio}
                     onChange={(e) => handleUpdate(index, "fechaInicio", e.target.value)}
                     placeholder="2019"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Año Fin</label>
+                  <label className="field-label">Año Fin</label>
                   <input
                     type="text"
                     value={edu.fechaFin}
                     onChange={(e) => handleUpdate(index, "fechaFin", e.target.value)}
                     placeholder="2023"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Promedio (opcional)</label>
+                  <label className="field-label">Promedio (opcional)</label>
                   <input
                     type="text"
                     value={edu.promedio || ""}
                     onChange={(e) => handleUpdate(index, "promedio", e.target.value)}
                     placeholder="8.5/10"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="input"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Descripción (opcional)</label>
+                <label className="field-label">Descripción (opcional)</label>
                 <textarea
                   value={edu.descripcion || ""}
                   onChange={(e) => handleUpdate(index, "descripcion", e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
+                  className="input resize-none"
                   rows={3}
                   placeholder="Proyecto final, tesis, etc..."
                 />
@@ -139,7 +139,7 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ educacion, onC
 
               <button
                 onClick={() => handleRemoveEducation(index)}
-                className="w-full px-4 py-2 mt-3 bg-red-50 text-red-600 hover:bg-red-100 rounded-lg font-medium text-sm"
+                className="btn btn-ghost btn-block mt-3"
               >
                 Eliminar Educación
               </button>
@@ -150,7 +150,7 @@ export const EducationEditor: React.FC<EducationEditorProps> = ({ educacion, onC
 
       <button
         onClick={handleAddEducation}
-        className="w-full px-4 py-3 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-lg font-medium text-sm border-2 border-dashed border-blue-300"
+        className="btn btn-secondary btn-dashed btn-block"
       >
         + Agregar Educación
       </button>

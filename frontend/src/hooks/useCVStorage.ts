@@ -81,11 +81,9 @@ export function useCVStorage(data: CVData): UseCVStorageResult {
       return;
     }
 
-    console.log("[useCVStorage] Autoguardando CV. nombre:", data.personal.nombre);
     const timer = setTimeout(() => {
       try {
         localStorage.setItem(DRAFT_KEY, JSON.stringify(data));
-        console.log("[useCVStorage] Guardado en localStorage, setJustSaved(true)");
         setJustSaved(true);
       } catch {
         /* sin storage: el editor sigue andando, sólo no persiste */
@@ -98,9 +96,7 @@ export function useCVStorage(data: CVData): UseCVStorageResult {
   // Apaga el cartelito de "guardado" un rato después de encenderlo.
   useEffect(() => {
     if (!justSaved) return;
-    console.log("[useCVStorage] justSaved=true, creando timer de 1500ms");
     const timer = setTimeout(() => {
-      console.log("[useCVStorage] Apagando justSaved");
       setJustSaved(false);
     }, 1500);
     return () => clearTimeout(timer);
