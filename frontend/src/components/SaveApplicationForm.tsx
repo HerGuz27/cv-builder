@@ -1,6 +1,7 @@
 import { useState } from "react";
-import type { MatchResult } from "../services/types";
+import type { JobApplication, MatchResult } from "../services/types";
 import { saveApplication } from "../services/storage";
+import { matchBarClass } from "./MatchResult";
 
 interface SaveApplicationFormProps {
   titulo: string;
@@ -26,32 +27,21 @@ export default function SaveApplicationForm({
   const [titulo, setTitulo] = useState(initialTitulo);
   const [url, setUrl] = useState(initialUrl);
   const [empresa, setEmpresa] = useState("");
-  const [estado, setEstado] = useState<
-    "postulado" | "entrevista" | "rechazado" | "oferta"
-  >("postulado");
+  const [estado, setEstado] = useState<JobApplication["estado"]>("postulado");
   const [notas, setNotas] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const handleSave = async () => {
-    if (!titulo.trim()) {
-      setError("El título es requerido");
-      return;
-    }
-    if (!url.trim()) {
-      setError("La URL es requerida");
-      return;
-    }
-    if (!empresa.trim()) {
-      setError("La empresa es requerida");
-      return;
-    }
+    if (!titulo.trim()) return setError("El título es requerido");
+    if (!url.trim()) return setError("La URL es requerida");
+    if (!empresa.trim()) return setError("La empresa es requerida");
 
     setLoading(true);
     setError("");
 
     try {
-      saveApplication(
+      await saveApplication(
         titulo,
         empresa.trim(),
         url,
@@ -73,88 +63,60 @@ export default function SaveApplicationForm({
   };
 
   return (
-    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-6">
-      <h3 className="text-lg font-semibold mb-4">Guardar esta postulación</h3>
+    <div className="bg-surface border-2 border-divider p-4 sm:p-6">
+      <div className="lbl mb-2">Historial</div>
+      <h3 className="text-lg mb-4">Guardar esta postulación</h3>
 
       <div className="space-y-4">
-        {/* Título */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Título <span className="text-red-500">*</span>
-          </label>
+          <label className="field-label">Título *</label>
           <input
             type="text"
             value={titulo}
             onChange={(e) => setTitulo(e.target.value)}
             placeholder="Ej: Senior Frontend Developer"
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
 
-        {/* Empresa */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Empresa <span className="text-red-500">*</span>
-          </label>
+          <label className="field-label">Empresa *</label>
           <input
             type="text"
             value={empresa}
             onChange={(e) => setEmpresa(e.target.value)}
             placeholder="Nombre de la empresa"
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
 
-        {/* URL */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            URL <span className="text-red-500">*</span>
-          </label>
+          <label className="field-label">URL *</label>
           <input
             type="url"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             placeholder="Ej: https://linkedin.com/jobs/..."
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="input"
           />
         </div>
 
-        {/* Match % (read-only) */}
         <div>
-          <label className="block text-sm font-medium mb-2">
-            Match: {porcentajeMatch}%
-          </label>
-          <div className="w-full bg-gray-200 rounded-full h-2">
+          <label className="field-label">Match: {porcentajeMatch}%</label>
+          <div className="w-full bg-neutral-300 h-2">
             <div
-              className={`h-2 rounded-full ${
-                porcentajeMatch >= 80
-                  ? "bg-green-500"
-                  : porcentajeMatch >= 60
-                    ? "bg-yellow-500"
-                    : porcentajeMatch >= 40
-                      ? "bg-orange-500"
-                      : "bg-red-500"
-              }`}
+              className={`h-2 ${matchBarClass(porcentajeMatch)}`}
               style={{ width: `${porcentajeMatch}%` }}
-            ></div>
+            />
           </div>
         </div>
 
-        {/* Estado */}
         <div>
-          <label className="block text-sm font-medium mb-2">Estado</label>
+          <label className="field-label">Estado</label>
           <select
             value={estado}
-            onChange={(e) =>
-              setEstado(
-                e.target.value as
-                  | "postulado"
-                  | "entrevista"
-                  | "rechazado"
-                  | "oferta"
-              )
-            }
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            onChange={(e) => setEstado(e.target.value as JobApplication["estado"])}
+            className="input"
           >
             <option value="postulado">Postulado</option>
             <option value="entrevista">En entrevista</option>
@@ -163,38 +125,31 @@ export default function SaveApplicationForm({
           </select>
         </div>
 
-        {/* Notas */}
         <div>
-          <label className="block text-sm font-medium mb-2">Notas</label>
+          <label className="field-label">Notas</label>
           <textarea
             value={notas}
             onChange={(e) => setNotas(e.target.value)}
             placeholder="Notas sobre la postulación (opcional)"
-            className="w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 h-24 resize-none"
+            className="input h-24"
           />
         </div>
 
-        {/* Error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+          <div className="bg-accent-100 text-accent-800 text-sm px-3 py-2 border border-accent-300">
             {error}
           </div>
         )}
 
-        {/* Buttons */}
         <div className="flex gap-3 pt-2">
           <button
             onClick={handleSave}
             disabled={loading || !titulo.trim() || !url.trim() || !empresa.trim()}
-            className="flex-1 bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed font-medium transition"
+            className="btn btn-primary flex-1"
           >
             {loading ? "Guardando..." : "Guardar Postulación"}
           </button>
-          <button
-            onClick={onCancel}
-            disabled={loading}
-            className="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg hover:bg-gray-400 disabled:cursor-not-allowed font-medium transition"
-          >
+          <button onClick={onCancel} disabled={loading} className="btn btn-secondary flex-1">
             Cancelar
           </button>
         </div>

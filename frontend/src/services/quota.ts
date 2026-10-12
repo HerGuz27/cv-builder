@@ -1,43 +1,31 @@
-const QUOTA_KEY = "ats_quota";
+import { supabase } from "./supabase";
 
 export const FREE_MONTHLY_LIMIT = 3;
-
-interface Quota {
-  period: string; // "2026-08"
-  used: number;
-}
 
 function currentPeriod(): string {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 }
 
-function read(): Quota {
-  const stored = localStorage.getItem(QUOTA_KEY);
-  const period = currentPeriod();
+/** Análisis que le quedan al usuario este mes. */
+export async function getRemaining(): Promise<number> {
+  const { data, error } = await supabase
+    .from("ats_usage")
+    .select("used")
+    .eq("period", currentPeriod())
+    .maybeSingle();
 
-  if (!stored) return { period, used: 0 };
-
-  try {
-    const parsed = JSON.parse(stored) as Quota;
-    // Reset on new month
-    if (parsed.period !== period) return { period, used: 0 };
-    return parsed;
-  } catch {
-    return { period, used: 0 };
-  }
+  if (error) throw new Error("No se pudo consultar tu cuota");
+  return Math.max(0, FREE_MONTHLY_LIMIT - (data?.used ?? 0));
 }
 
-export function getRemaining(): number {
-  return Math.max(0, FREE_MONTHLY_LIMIT - read().used);
-}
+/** Descuenta un análisis de forma atómica. Devuelve false si ya no quedaba cuota. */
+export async function consume(): Promise<boolean> {
+  const { data, error } = await supabase.rpc("consume_ats_quota", {
+    p_period: currentPeriod(),
+    p_limit: FREE_MONTHLY_LIMIT,
+  });
 
-export function hasQuota(): boolean {
-  return getRemaining() > 0;
-}
-
-export function consume(): void {
-  const quota = read();
-  quota.used += 1;
-  localStorage.setItem(QUOTA_KEY, JSON.stringify(quota));
+  if (error) throw new Error("No se pudo registrar el análisis");
+  return (data as number) >= 0;
 }

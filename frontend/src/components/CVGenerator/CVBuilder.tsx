@@ -7,6 +7,7 @@ import { mockCVData } from "../../data/mockCV";
 import { emptyCVData } from "../../data/emptyCV";
 import { CVEditor } from "./CVEditor";
 import { PDFPreview } from "./PDFPreview";
+import AccountMenu from "../AccountMenu";
 import SaveOutlinedIcon from "@mui/icons-material/SaveOutlined";
 import AutoAwesomeOutlinedIcon from "@mui/icons-material/AutoAwesomeOutlined";
 import NoteAddOutlinedIcon from "@mui/icons-material/NoteAddOutlined";
@@ -114,7 +115,7 @@ export const CVBuilder: React.FC<CVBuilderProps> = ({ data: initialData }) => {
           <div className="flex items-baseline gap-3 min-w-0 mr-auto">
             <span className="text-lg font-extrabold font-sans tracking-tight">Nexocv</span>
             <span className="hidden md:block text-xs text-muted truncate">
-              Creá tu CV · Gratis, sin registro. Se guarda solo en tu navegador.
+              Creá tu CV · Gratis. Se guarda en tu navegador. El ATS requiere cuenta.
             </span>
           </div>
 
@@ -223,6 +224,8 @@ export const CVBuilder: React.FC<CVBuilderProps> = ({ data: initialData }) => {
                 {showEditor ? "Ocultar" : "Mostrar"}
                 <span className="hidden sm:inline"> Editor</span>
               </button>
+
+              <AccountMenu />
           </div>
         </div>
       </div>

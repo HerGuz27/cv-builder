@@ -1,21 +1,36 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import ATSPage from "./pages/ATS";
 import { CVBuilderPage } from "./pages/CVBuilder";
+import LoginPage from "./pages/Login";
+import RegisterPage from "./pages/Register";
+import { AuthProvider } from "./context/AuthContext";
+import ProtectedRoute from "./components/auth/ProtectedRoute";
 
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* MVP: la app es el generador de CV. */}
-        <Route path="/" element={<CVBuilderPage />} />
-        <Route path="/cv-builder" element={<CVBuilderPage />} />
+      <AuthProvider>
+        <Routes>
+          {/* El generador de CV es público. */}
+          <Route path="/" element={<CVBuilderPage />} />
+          <Route path="/cv-builder" element={<CVBuilderPage />} />
 
-        {/* Funcionalidades todavía no lanzadas: siguen andando por URL directa,
-            pero no se linkean desde ningún lado de la interfaz. */}
-        <Route path="/ats" element={<ATSPage />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
+          {/* El ATS (analizador + historial) requiere sesión. */}
+          <Route
+            path="/ats"
+            element={
+              <ProtectedRoute>
+                <ATSPage />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }
