@@ -2,12 +2,16 @@ import { useEffect, useState } from "react";
 import { extractTextFromPDF } from "../services/pdf";
 import { analyzeJobMatch } from "../services/claude";
 import type { MatchResult } from "../services/types";
-import { getRemaining, consume, FREE_MONTHLY_LIMIT } from "../services/quota";
+import { getRemaining, FREE_MONTHLY_LIMIT } from "../services/quota";
 import MatchResultDisplay from "./MatchResult";
 import SaveApplicationForm from "./SaveApplicationForm";
 import Spinner from "./auth/Spinner";
 import CheckCircleOutlinedIcon from "@mui/icons-material/CheckCircleOutlined";
 import UploadFileOutlinedIcon from "@mui/icons-material/UploadFileOutlined";
+
+// Mismos topes que aplica la Edge Function job-ats; acá solo se avisa antes de enviar.
+const MAX_CV_CHARS = 20000;
+const MAX_JOB_CHARS = 10000;
 
 export default function ATSForm() {
   const [cvFile, setCvFile] = useState<File | null>(null);
@@ -61,9 +65,13 @@ export default function ATSForm() {
         );
       }
 
-      const matchResult = await analyzeJobMatch(cvText, jobDescription);
+      if (cvText.length > MAX_CV_CHARS) {
+        throw new Error(
+          `Tu CV es demasiado largo (máximo ${MAX_CV_CHARS.toLocaleString("es")} caracteres de texto).`
+        );
+      }
 
-      await consume();
+      const matchResult = await analyzeJobMatch(cvText, jobDescription);
       setRemaining(await getRemaining());
       setResult(matchResult);
     } catch (err) {
@@ -128,9 +136,13 @@ export default function ATSForm() {
             <textarea
               value={jobDescription}
               onChange={(e) => setJobDescription(e.target.value)}
+              maxLength={MAX_JOB_CHARS}
               placeholder="Pegá acá el aviso completo: requisitos, responsabilidades..."
               className="input h-64"
             />
+            <div className="text-xs text-muted text-right mt-1">
+              {jobDescription.length.toLocaleString("es")}/{MAX_JOB_CHARS.toLocaleString("es")}
+            </div>
           </div>
 
           {error && (
