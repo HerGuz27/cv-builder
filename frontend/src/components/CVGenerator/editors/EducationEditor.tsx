@@ -9,7 +9,7 @@ interface EducationEditorProps {
 export const EducationEditor: React.FC<EducationEditorProps> = ({ educacion, onChange }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
-  const handleUpdate = (index: number, field: keyof Education, value: any) => {
+  const handleUpdate = (index: number, field: keyof Education, value: Education[keyof Education]) => {
     const updated = [...educacion];
     updated[index] = { ...updated[index], [field]: value };
     onChange(updated);
