@@ -3,13 +3,24 @@ import { Link } from "react-router-dom";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import LogoutOutlinedIcon from "@mui/icons-material/LogoutOutlined";
 import FactCheckOutlinedIcon from "@mui/icons-material/FactCheckOutlined";
+import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import { useAuth } from "../context/AuthContext";
+import { getCredits } from "../services/quota";
 
 /** Botón "Ingresar" o menú de usuario; mismo lenguaje visual que el header del builder. */
 export default function AccountMenu({ showAtsLink = true }: { showAtsLink?: boolean }) {
   const { user, signOut } = useAuth();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const [credits, setCredits] = useState<number | null>(null);
+
+  // Se refresca cada vez que se abre el menú.
+  useEffect(() => {
+    if (!open || !user) return;
+    getCredits()
+      .then(setCredits)
+      .catch(() => setCredits(null));
+  }, [open, user]);
 
   useEffect(() => {
     if (!open) return;
@@ -44,6 +55,11 @@ export default function AccountMenu({ showAtsLink = true }: { showAtsLink?: bool
               Analizador ATS
             </Link>
           )}
+          <Link to="/pricing" className="menu-item" onClick={() => setOpen(false)}>
+            <ShoppingCartOutlinedIcon className="text-muted" sx={{ fontSize: 18 }} />
+            Comprar créditos
+            {credits !== null && <span className="tag tag-neutral ml-auto">{credits}</span>}
+          </Link>
           <button
             className="menu-item"
             onClick={async () => {

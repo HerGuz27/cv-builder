@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { extractTextFromPDF } from "../services/pdf";
-import { analyzeJobMatch } from "../services/claude";
+import { AnalysisError, analyzeJobMatch } from "../services/claude";
 import type { MatchResult } from "../services/types";
-import { getRemaining, FREE_MONTHLY_LIMIT } from "../services/quota";
+import { getCredits, getRemaining, FREE_MONTHLY_LIMIT } from "../services/quota";
 import MatchResultDisplay from "./MatchResult";
 import SaveApplicationForm from "./SaveApplicationForm";
 import Spinner from "./auth/Spinner";
@@ -20,11 +21,23 @@ export default function ATSForm() {
   const [error, setError] = useState("");
   const [result, setResult] = useState<MatchResult | null>(null);
   const [remaining, setRemaining] = useState<number | null>(null);
+  const [credits, setCredits] = useState<number | null>(null);
+  // Sin cuota gratuita ni créditos: se muestra el botón para comprar.
+  const [noCredits, setNoCredits] = useState(false);
+
+  const refreshUsage = async () => {
+    // Si no se pueden leer los créditos no se bloquea: el servidor decide igual.
+    const [left, balance] = await Promise.all([getRemaining(), getCredits().catch(() => null)]);
+    setRemaining(left);
+    setCredits(balance);
+    return { left, balance };
+  };
 
   useEffect(() => {
-    getRemaining()
-      .then(setRemaining)
-      .catch(() => setRemaining(null));
+    refreshUsage().catch(() => {
+      setRemaining(null);
+      setCredits(null);
+    });
   }, []);
 
   const handleCVUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -46,14 +59,15 @@ export default function ATSForm() {
 
     setLoading(true);
     setError("");
+    setNoCredits(false);
     setResult(null);
 
     try {
-      const left = await getRemaining();
-      setRemaining(left);
-      if (left <= 0) {
-        throw new Error(
-          `Llegaste al límite de ${FREE_MONTHLY_LIMIT} análisis del plan gratuito este mes.`
+      const { left, balance } = await refreshUsage();
+      if (left <= 0 && balance === 0) {
+        throw new AnalysisError(
+          `Llegaste al límite de ${FREE_MONTHLY_LIMIT} análisis gratis este mes y no tenés créditos.`,
+          "NO_CREDITS"
         );
       }
 
@@ -72,10 +86,11 @@ export default function ATSForm() {
       }
 
       const matchResult = await analyzeJobMatch(cvText, jobDescription);
-      setRemaining(await getRemaining());
+      await refreshUsage().catch(() => {});
       setResult(matchResult);
     } catch (err) {
       setError(err instanceof Error ? err.message : "Error al analizar el CV");
+      setNoCredits(err instanceof AnalysisError && err.code === "NO_CREDITS");
     } finally {
       setLoading(false);
     }
@@ -96,9 +111,16 @@ export default function ATSForm() {
             <h1 className="text-2xl sm:text-3xl">Analizador de Match</h1>
           </div>
           {remaining !== null && (
-            <span className="tag tag-neutral whitespace-nowrap">
-              {remaining}/{FREE_MONTHLY_LIMIT} análisis restantes
-            </span>
+            <div className="flex flex-wrap justify-end gap-2">
+              <span className="tag tag-neutral whitespace-nowrap">
+                {remaining}/{FREE_MONTHLY_LIMIT} gratis este mes
+              </span>
+              {credits !== null && (
+                <Link to="/pricing" className="tag tag-outline whitespace-nowrap">
+                  {credits} créditos
+                </Link>
+              )}
+            </div>
           )}
         </div>
 
@@ -146,8 +168,13 @@ export default function ATSForm() {
           </div>
 
           {error && (
-            <div className="bg-accent-100 text-accent-800 text-sm px-3 py-2 border border-accent-300">
-              {error}
+            <div className="bg-accent-100 text-accent-800 text-sm px-3 py-2 border border-accent-300 flex flex-wrap items-center justify-between gap-2">
+              <span>{error}</span>
+              {noCredits && (
+                <Link to="/pricing" className="btn btn-primary">
+                  Comprar créditos
+                </Link>
+              )}
             </div>
           )}
 
