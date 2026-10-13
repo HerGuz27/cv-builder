@@ -3,6 +3,8 @@ import ATSPage from "./pages/ATS";
 import { CVBuilderPage } from "./pages/CVBuilder";
 import LoginPage from "./pages/Login";
 import RegisterPage from "./pages/Register";
+import PricingPage from "./pages/Pricing";
+import CheckoutResultPage from "./pages/CheckoutResult";
 import { AuthProvider } from "./context/AuthContext";
 import ProtectedRoute from "./components/auth/ProtectedRoute";
 
@@ -24,6 +26,17 @@ function App() {
             element={
               <ProtectedRoute>
                 <ATSPage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Pagos: los precios son públicos, el resultado del checkout requiere sesión. */}
+          <Route path="/pricing" element={<PricingPage />} />
+          <Route
+            path="/checkout/result"
+            element={
+              <ProtectedRoute>
+                <CheckoutResultPage />
               </ProtectedRoute>
             }
           />

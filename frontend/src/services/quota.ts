@@ -22,3 +22,11 @@ export async function getRemaining(): Promise<number> {
   if (error) throw new Error("No se pudo consultar tu cuota");
   return Math.max(0, FREE_MONTHLY_LIMIT - (data?.used ?? 0));
 }
+
+/** Créditos comprados disponibles (se usan cuando se agota la cuota gratuita). */
+export async function getCredits(): Promise<number> {
+  const { data, error } = await supabase.from("ats_credits").select("balance").maybeSingle();
+
+  if (error) throw new Error("No se pudieron consultar tus créditos");
+  return data?.balance ?? 0;
+}
