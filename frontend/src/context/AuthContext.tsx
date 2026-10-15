@@ -22,8 +22,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isSupabaseConfigured) return;
 
-    auth.getSession().then(({ data, error }) => {
+    // getSession() no devuelve el error del canje del ?code= de OAuth;
+    // initialize() (ya en curso desde createClient) sí.
+    supabase.auth.initialize().then(({ error }) => {
       if (error) setAuthError(`${error.name}: ${error.message}`);
+    });
+
+    auth.getSession().then(({ data }) => {
       setSession(data.session);
       setLoading(false);
     });
