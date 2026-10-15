@@ -15,7 +15,9 @@ export default function ProtectedRoute({ children }: { children: ReactNode }) {
     );
   }
 
-  if (!user) return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+  // Se conserva el query string para que /login pueda mostrar errores de OAuth
+  // (?error_description=...) que Supabase devuelve al volver de Google.
+  if (!user) return <Navigate to={`/login${location.search}`} state={{ from: location.pathname }} replace />;
 
   return <>{children}</>;
 }
