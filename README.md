@@ -14,7 +14,7 @@ Herramienta web para armar un CV y medir cuánto encaja con una oferta de trabaj
 | PDF | `@react-pdf/renderer` (generación), `pdfjs-dist` (lectura del CV subido) |
 | Backend | Supabase: Auth (email + Google, PKCE), Postgres con RLS, Edge Functions |
 | IA | Claude (Anthropic), llamado **solo desde una Edge Function** |
-| Deploy | Vercel (frontend) |
+| Deploy | Cloudflare Workers (static assets) vía GitHub Actions |
 
 ## Estructura
 
@@ -64,7 +64,7 @@ Scripts: `npm run dev`, `npm run build`, `npm run preview`.
 
 ## Estado
 
-MVP en desarrollo. Sin tests automatizados todavía.
+MVP en desarrollo. CI (typecheck, lint, tests, build) y deploy automático a Cloudflare al mergear a `main`.
 
 ## Licencia
 

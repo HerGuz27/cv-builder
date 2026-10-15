@@ -13,7 +13,12 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(() => {
+    const params = new URLSearchParams(location.search);
+    const code = params.get("error_code") ?? params.get("error");
+    if (!code) return "";
+    return `No se pudo iniciar sesión con Google (${code}): ${params.get("error_description") ?? "error desconocido"}`;
+  });
 
   if (!authLoading && user) return <Navigate to={from} replace />;
 

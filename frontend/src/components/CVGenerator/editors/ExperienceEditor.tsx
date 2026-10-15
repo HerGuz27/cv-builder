@@ -10,7 +10,7 @@ interface ExperienceEditorProps {
 export const ExperienceEditor: React.FC<ExperienceEditorProps> = ({ experiencia, onChange }) => {
   const [expandedIndex, setExpandedIndex] = useState<number | null>(0);
 
-  const handleUpdate = (index: number, field: keyof Experience, value: any) => {
+  const handleUpdate = (index: number, field: keyof Experience, value: Experience[keyof Experience]) => {
     const updated = [...experiencia];
     updated[index] = { ...updated[index], [field]: value };
     onChange(updated);
