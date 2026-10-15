@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!isSupabaseConfigured) return;
 
-    auth.getSession().then(({ data, error }) => {
+    auth.getSession().then(({ data }) => {
       setSession(data.session);
       setLoading(false);
     });
