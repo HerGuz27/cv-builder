@@ -26,7 +26,11 @@ export const auth = {
   signInWithGoogle: () =>
     supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: { redirectTo: `${window.location.origin}/ats` },
+      options: {
+        redirectTo: `${window.location.origin}/ats`,
+        // Siempre mostrar el selector de cuentas de Google.
+        queryParams: { prompt: 'select_account' },
+      },
     }),
   signOut: () => supabase.auth.signOut(),
   getSession: () => supabase.auth.getSession(),
