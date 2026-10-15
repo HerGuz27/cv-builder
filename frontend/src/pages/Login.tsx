@@ -7,7 +7,7 @@ import AuthLayout, { ErrorBox, GoogleButton, OrDivider, authErrorMessage } from 
 import Spinner from "../components/auth/Spinner";
 
 export default function LoginPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, loading: authLoading, authError } = useAuth();
   const location = useLocation();
   const from = (location.state as { from?: string } | null)?.from ?? "/ats";
   const [email, setEmail] = useState("");
@@ -52,7 +52,7 @@ export default function LoginPage() {
           <input id="password" type="password" required autoComplete="current-password" className="input"
             value={password} onChange={(e) => setPassword(e.target.value)} />
         </div>
-        {error && <ErrorBox>{error}</ErrorBox>}
+        {(error || authError) && <ErrorBox>{error || `No se pudo restaurar la sesión (${authError})`}</ErrorBox>}
         <button type="submit" className="btn btn-primary w-full" disabled={loading}>
           {loading ? <Spinner /> : "Ingresar"}
         </button>
